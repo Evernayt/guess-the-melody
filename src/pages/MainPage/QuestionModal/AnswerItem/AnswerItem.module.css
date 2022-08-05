@@ -1,0 +1,32 @@
+.not_selected_answer {
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+
+.not_selected_answer:hover {
+  background-color: var(--secondary-color);
+  color: black;
+}
+
+.correct_answer {
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  background-color: var(--success-color);
+}
+
+.correct_answer:hover {
+  background-color: var(--hover-success-color);
+}
+
+.wrong_answer {
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  background-color: var(--danger-color);
+}
+
+.wrong_answer:hover {
+  background-color: var(--hover-danger-color);
+}

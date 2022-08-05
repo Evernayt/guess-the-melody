@@ -1,0 +1,15 @@
+.message {
+  text-align: center;
+  color: var(--secondary-text-color);
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.image {
+  max-height: calc(100vh - 300px);
+  max-width: calc(100vw - 300px);
+}

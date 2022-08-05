@@ -1,0 +1,9 @@
+.message {
+  margin-bottom: 12px;
+  white-space: pre-line;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}

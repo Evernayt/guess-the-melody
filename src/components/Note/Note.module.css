@@ -1,0 +1,31 @@
+.image_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.text {
+  position: absolute;
+  color: white;
+  z-index: 10;
+  font-family: 'TickingTimebombBbItalic';
+  pointer-events: none;
+}
+
+.original_music {
+  position: absolute;
+  z-index: 12;
+  top: 0;
+  right: 0;
+  height: 40px;
+  width: 80px;
+  cursor: cell;
+}
+
+.image {
+  height: 100%;
+  position: relative;
+  pointer-events: none;
+}

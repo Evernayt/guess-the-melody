@@ -1,0 +1,22 @@
+.piano_container {
+  background-color: #101010;
+  border-radius: var(--border-radius);
+  padding: 24px;
+}
+
+.keys_container {
+  display: flex;
+  position: relative;
+}
+
+.header {
+  padding: 12px;
+  display: flex;
+  padding-bottom: 24px;
+  gap: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
