@@ -1,18 +1,39 @@
-import PianoOctave from './PianoOctave/PianoOctave';
-import styles from './Piano.module.css';
-import { octaves } from 'constants/octaves';
-import Button, { ButtonVariants } from 'components/Button/Button';
-import { FC, useEffect, useRef, useState } from 'react';
-import Textbox from 'components/Textbox/Textbox';
-import { IPianoNote, PianoKeyColors } from 'models/IMusicTheme';
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  NumberInput,
+  NumberInputField,
+  Tooltip,
+} from '@chakra-ui/react';
+import { OCTAVES } from 'constants/octaves';
 import { sleep } from 'helpers';
-import { useAppDispatch } from 'hooks/redux';
-import { setLastPlayingTimeAction } from 'store/reducers/ThirdTourSlice';
+import { useAppDispatch, useAppSelector } from 'hooks/redux';
+import { FC, useEffect, useRef, useState } from 'react';
+import { tour3Actions } from 'store/reducers/Tour3Slice';
+import { IPianoNote, PianoKeyColors } from 'types/IMusicTheme';
+import PianoOctave from './piano-octave/PianoOctave';
+import {
+  IconPencil,
+  IconPencilCheck,
+  IconPlayerPlayFilled,
+  IconPlayerRecord,
+  IconPlayerStopFilled,
+} from '@tabler/icons-react';
+import { MIN_PIANO_NOTES } from 'constants/initialStates';
+import { setMaxPianoNotes } from 'helpers/localStorage';
+import { appActions } from 'store/reducers/AppSlice';
+import styles from './Piano.module.scss';
 
 interface PianoProps {
   pianoNotes: IPianoNote[];
   setPianoNotes: (
-    state: IPianoNote[] | ((state: IPianoNote[]) => IPianoNote[])
+    state: IPianoNote[] | ((state: IPianoNote[]) => IPianoNote[]),
   ) => void;
 }
 
@@ -23,23 +44,20 @@ const Piano: FC<PianoProps> = ({ pianoNotes, setPianoNotes }) => {
   const [notesText, setNotesText] = useState<string>('');
   const [playingNote, setPlayingNote] = useState<IPianoNote>();
 
-  const isPlayingRef = useRef(isPlaying);
+  const maxPianoNotes = useAppSelector((state) => state.app.maxPianoNotes);
+
+  const isPlayingRef = useRef<boolean>(isPlaying);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     setNotesText('');
-    for (let index = 0; index < pianoNotes.length; index++) {
-      const key = pianoNotes[index].key;
-      const color = pianoNotes[index].color;
-      const delay = pianoNotes[index].delay;
+    pianoNotes.forEach(({ delay, color, key }) => {
+      setNotesText((prevState) => `${prevState}[${delay}-${color}-${key}] `);
+    });
 
-      setNotesText((prevState) => `${prevState}[${delay}-${color}-${key}]   `);
-    }
-
-    if (pianoNotes.length === 7) {
+    if (pianoNotes.length === maxPianoNotes) {
       setIsRecord(false);
-      return;
     }
   }, [pianoNotes]);
 
@@ -52,7 +70,7 @@ const Piano: FC<PianoProps> = ({ pianoNotes, setPianoNotes }) => {
     setPianoNotes([]);
     if (notesText === '') return;
 
-    const notesArr = notesText.trimEnd().split('   ');
+    const notesArr = notesText.trimEnd().split(' ');
     for (let index = 0; index < notesArr.length; index++) {
       const note = notesArr[index].replace(/\[|\]/g, '').split('-');
       setPianoNotes((prevState) => [
@@ -69,49 +87,22 @@ const Piano: FC<PianoProps> = ({ pianoNotes, setPianoNotes }) => {
     }
   };
 
-  const playNotes = () => {
+  const playNotes = async () => {
     setIsPlaying(true);
-    sleep(pianoNotes[0].delay, isPlayingRef)
-      .then(() => {
-        setPlayingNote(pianoNotes[0]);
-        sleep(pianoNotes[1].delay, isPlayingRef)
-          .then(() => {
-            setPlayingNote(pianoNotes[1]);
-            sleep(pianoNotes[2].delay, isPlayingRef)
-              .then(() => {
-                setPlayingNote(pianoNotes[2]);
-                sleep(pianoNotes[3].delay, isPlayingRef)
-                  .then(() => {
-                    setPlayingNote(pianoNotes[3]);
-                    sleep(pianoNotes[4].delay, isPlayingRef)
-                      .then(() => {
-                        setPlayingNote(pianoNotes[4]);
-                        sleep(pianoNotes[5].delay, isPlayingRef)
-                          .then(() => {
-                            setPlayingNote(pianoNotes[5]);
-                            sleep(pianoNotes[6].delay, isPlayingRef)
-                              .then(() => {
-                                setPlayingNote(pianoNotes[6]);
-                                setIsPlaying(false);
-                              })
-                              .catch(() => {});
-                          })
-                          .catch(() => {});
-                      })
-                      .catch(() => {});
-                  })
-                  .catch(() => {});
-              })
-              .catch(() => {});
-          })
-          .catch(() => {});
-      })
-      .catch(() => {});
+    try {
+      for (let i = 0; i < pianoNotes.length; i++) {
+        await sleep(pianoNotes[i].delay, isPlayingRef);
+        setPlayingNote(pianoNotes[i]);
+      }
+    } catch (error) {
+    } finally {
+      setIsPlaying(false);
+    }
   };
 
   const record = () => {
     setIsRecord((prevState) => !prevState);
-    dispatch(setLastPlayingTimeAction(0));
+    dispatch(tour3Actions.setLastPlayingTime(0));
   };
 
   const deleteRecord = () => {
@@ -119,50 +110,101 @@ const Piano: FC<PianoProps> = ({ pianoNotes, setPianoNotes }) => {
     setNotesText('');
   };
 
+  const maxPianoNotesChange = (maxPianoNotes: number) => {
+    dispatch(appActions.setMaxPianoNotes(maxPianoNotes));
+    setMaxPianoNotes(maxPianoNotes);
+  };
+
   return (
-    <div>
-      <div className={styles.header}>
-        <Textbox
-          disabled={!isEditMode}
+    <Box p={4} borderRadius={12} bgColor="#101010">
+      <HStack>
+        <Tooltip
+          label="Максимальное количество нот, которое можно записать"
+          textAlign="center"
+          hasArrow
+          w="250px"
+          placement="right"
+          openDelay={800}
+        >
+          <InputGroup maxW="130px">
+            <InputLeftAddon>Макс. нот</InputLeftAddon>
+            <NumberInput
+              min={MIN_PIANO_NOTES}
+              max={99}
+              color="white"
+              defaultValue={maxPianoNotes}
+              onChange={(_, number) =>
+                number >= MIN_PIANO_NOTES && maxPianoNotesChange(number)
+              }
+            >
+              <NumberInputField p="0 12px" />
+            </NumberInput>
+          </InputGroup>
+        </Tooltip>
+        <Input
           value={notesText}
+          disabled={!isEditMode}
+          color="white"
+          fontSize="xs"
+          w="100%"
           onChange={(e) => setNotesText(e.target.value)}
         />
-        <div className={styles.controls}>
-          {pianoNotes.length === 7 ? (
+        <HStack>
+          {pianoNotes.length >= maxPianoNotes ? (
             <Button onClick={deleteRecord}>Удалить запись</Button>
           ) : (
-            <Button variant={ButtonVariants.primary} onClick={record}>
+            <Button
+              leftIcon={
+                <IconPlayerRecord
+                  className={isRecord ? styles.rec : ''}
+                  size={20}
+                  color="#E53E3E"
+                />
+              }
+              onClick={record}
+            >
               {isRecord ? 'Стоп' : 'Запись'}
             </Button>
           )}
-
-          <Button onClick={isEditMode ? editNotes : () => setIsEditMode(true)}>
-            {isEditMode ? 'Применить' : 'Редактировать'}
-          </Button>
-          <Button
-            variant={ButtonVariants.primary}
-            disabled={pianoNotes.length < 7}
+          <IconButton
+            icon={
+              isEditMode ? (
+                <IconPencilCheck size={20} />
+              ) : (
+                <IconPencil size={20} />
+              )
+            }
+            aria-label="edit"
+            onClick={isEditMode ? editNotes : () => setIsEditMode(true)}
+          />
+          <IconButton
+            icon={
+              isPlaying ? (
+                <IconPlayerStopFilled size={20} />
+              ) : (
+                <IconPlayerPlayFilled size={20} />
+              )
+            }
+            aria-label="play"
+            disabled={pianoNotes.length < maxPianoNotes || isEditMode}
             onClick={isPlaying ? () => setIsPlaying(false) : playNotes}
-          >
-            {isPlaying ? 'Стоп' : 'Старт'}
-          </Button>
-        </div>
-      </div>
-      <div className={styles.piano_container}>
-        <div className={styles.keys_container}>
-          {octaves.map((octave) => (
-            <PianoOctave
-              pianoOctave={octave}
-              setPianoNotes={setPianoNotes}
-              disabled={isEditMode}
-              playingNote={playingNote}
-              isRecord={isRecord}
-              key={octave.id}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+          />
+        </HStack>
+      </HStack>
+      <Flex mt={4} position="relative">
+        {OCTAVES.map((octave) => (
+          <PianoOctave
+            pianoOctave={octave}
+            setPianoNotes={setPianoNotes}
+            disabled={isEditMode}
+            playingNote={playingNote}
+            isRecord={isRecord}
+            maxNotes={maxPianoNotes}
+            key={octave.id}
+          />
+        ))}
+      </Flex>
+    </Box>
   );
 };
 

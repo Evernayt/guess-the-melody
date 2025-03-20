@@ -10,196 +10,14 @@
  */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import fs from 'fs-extra';
+import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import os from 'os';
-
-export default class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
+import { IMusic } from 'types/IMusic';
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('get-assets-path', async (event) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  event.reply('get-assets-path', [RESOURCES_PATH]);
-});
-
-ipcMain.on('copy-music', async (event, arg) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const files = arg[0];
-  const musicFiles = [];
-
-  for (let index = 0; index < files.length; index++) {
-    const srcPath = files[index];
-
-    const id = uuidv4();
-    const name = path.basename(srcPath);
-    const extension = path.extname(srcPath);
-    const shortPath = path.join('music', id + extension);
-
-    musicFiles.push({ id, name, path: shortPath, isPending: true });
-
-    const destPath = path.join(RESOURCES_PATH, shortPath);
-    fs.copyFile(srcPath, destPath);
-  }
-
-  event.reply('copy-music', [musicFiles]);
-});
-
-ipcMain.on('remove-music', async (event, arg) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const shortPath = arg[0];
-  const destPath = path.join(RESOURCES_PATH, shortPath);
-
-  fs.removeSync(destPath);
-
-  event.reply('remove-music', []);
-});
-
-ipcMain.on('export-data', async (event, arg) => {
-  const data = arg[0];
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const musicFolder = path.join(RESOURCES_PATH, 'music');
-  const imagesFolder = path.join(RESOURCES_PATH, 'question_images');
-
-  const destFolder = os.homedir() + '/Desktop/GuessTheMelody DATA';
-  const destFile = os.homedir() + '/Desktop/GuessTheMelody DATA/data.json';
-
-  fs.mkdir(destFolder, (err) => {
-    if (err) {
-      event.reply('export-data', [err.message]);
-    } else {
-      fs.copy(imagesFolder, destFolder + '/question_images').catch((err) =>
-        event.reply('export-data', [err.message])
-      );
-
-      fs.copy(musicFolder, destFolder + '/music')
-        .then(() => {
-          fs.writeFile(destFile, data, (err) => {
-            if (err) {
-              event.reply('export-data', [err.message]);
-            } else {
-              event.reply('export-data', [
-                'Экспортировано на рабочий стол.',
-                data,
-              ]);
-            }
-          });
-        })
-        .catch((err) => event.reply('export-data', [err.message]));
-    }
-  });
-});
-
-ipcMain.on('import-data', async (event, arg) => {
-  const jsonPath = arg[0];
-  const musicFolder = jsonPath.replace('data.json', 'music');
-  const imagesFolder = jsonPath.replace('data.json', 'question_images');
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const musicDestFolder = path.join(RESOURCES_PATH, 'music');
-  const imagesDestFolder = path.join(RESOURCES_PATH, 'question_images');
-
-  fs.emptyDir(imagesDestFolder)
-    .then(() => {
-      fs.copy(imagesFolder, imagesDestFolder).then(() => {
-        fs.emptyDir(musicDestFolder)
-          .then(() => {
-            fs.copy(musicFolder, musicDestFolder);
-          })
-          .catch((err) => event.reply('import-data', [err.message, null]));
-
-        fs.readFile(jsonPath, { encoding: 'utf8' })
-          .then((file) => {
-            const data = JSON.parse(file);
-            event.reply('import-data', ['Импортировано', data]);
-          })
-          .catch((err) => {
-            event.reply('import-data', [err.message, null]);
-          });
-      });
-    })
-    .catch((err) => event.reply('import-data', [err.message, null]));
-});
-
-ipcMain.on('clear-music', async (event) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const destFolder = path.join(RESOURCES_PATH, 'music');
-
-  fs.emptyDir(destFolder);
-
-  event.reply('clear-music', []);
-});
-
-ipcMain.on('copy-image', async (event, arg) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const imageSrc = arg[0];
-
-  const id = uuidv4();
-  const extension = path.extname(imageSrc);
-  const shortPath = path.join('question_images', id + extension);
-
-  const destPath = path.join(RESOURCES_PATH, shortPath);
-  fs.copyFile(imageSrc, destPath);
-
-  event.reply('copy-image', [shortPath]);
-});
-
-ipcMain.on('remove-image', async (event, arg) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const shortPath = arg[0];
-  const destPath = path.join(RESOURCES_PATH, shortPath);
-
-  fs.removeSync(destPath);
-
-  event.reply('remove-image', []);
-});
-
-ipcMain.on('clear-images', async (event) => {
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const destFolder = path.join(RESOURCES_PATH, 'question_images');
-
-  fs.emptyDir(destFolder);
-
-  event.reply('clear-images', []);
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -213,43 +31,28 @@ if (isDebug) {
   require('electron-debug')();
 }
 
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
 
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    .catch(console.log);
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
 };
 
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
+
 const createWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
-  }
-
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-
-  const getAssetPath = (...paths: string[]): string => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
-
   mainWindow = new BrowserWindow({
     show: false,
     width: 1280,
     height: 768,
-    autoHideMenuBar: true,
     icon: getAssetPath('icon.ico'),
+    autoHideMenuBar: true,
     webPreferences: {
+      webSecurity: false,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
-      webSecurity: false,
     },
   });
 
@@ -278,15 +81,219 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
-
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
-  //new AppUpdater();
 };
+
+async function emptyDir(dir: string): Promise<void> {
+  try {
+    const files = await fs.readdir(dir);
+
+    const deletePromises = files.map(async (file) => {
+      const filePath = path.join(dir, file);
+
+      try {
+        await fs.unlink(filePath);
+      } catch (error: any) {
+        if (error.code !== 'ENOENT') {
+          throw error;
+        }
+      }
+    });
+
+    await Promise.all(deletePromises);
+  } catch (error: any) {
+    console.error('Ошибка при очистке директории:', error.message);
+  }
+}
+
+async function copyFileWithSuffix(
+  source: string,
+  destination: string,
+): Promise<string> {
+  const destDir = path.dirname(destination);
+  const fileName = path.basename(destination);
+  const fileExt = path.extname(fileName);
+  const baseName = path.basename(fileName, fileExt);
+
+  let newFileName = fileName;
+  let counter = 1;
+
+  while (true) {
+    try {
+      await fs.access(path.join(destDir, newFileName));
+      newFileName = `${baseName} (${counter})${fileExt}`;
+      counter++;
+    } catch (err) {
+      break;
+    }
+  }
+
+  const finalDestination = path.join(destDir, newFileName);
+
+  try {
+    await fs.copyFile(source, finalDestination);
+    return newFileName;
+  } catch (err) {
+    return '';
+  }
+}
 
 /**
  * Add event listeners...
  */
+
+ipcMain.on('get-assets-path', async (event) => {
+  event.reply('get-assets-path', [RESOURCES_PATH]);
+});
+
+ipcMain.on('copy-music', async (event, arg) => {
+  const filePaths: string[] = arg[0];
+  const musicFiles: IMusic[] = [];
+
+  try {
+    for (const filePath of filePaths) {
+      const id = uuidv4();
+      const name = path.basename(filePath);
+      const absolutePath = getAssetPath(path.join('music', name));
+
+      const newFileName = await copyFileWithSuffix(filePath, absolutePath);
+
+      const relativePath = path.join('music', newFileName);
+      musicFiles.push({ id, name: newFileName, relativePath, isPending: true });
+    }
+
+    event.reply('copy-music', [musicFiles]);
+  } catch (error) {
+    event.reply('notification', [
+      'Ошибка копирования музыки',
+      `${error}`,
+      'error',
+    ]);
+  }
+});
+
+ipcMain.on('remove-music', async (event, arg) => {
+  const relativePath: string = arg[0];
+  const absolutePath = getAssetPath(relativePath);
+
+  try {
+    await fs.unlink(absolutePath);
+    event.reply('remove-music', []);
+  } catch (error) {
+    event.reply('notification', [
+      'Ошибка удаления музыки',
+      `${error}`,
+      'error',
+    ]);
+  }
+});
+
+ipcMain.on('copy-image', async (event, arg) => {
+  const imagePath: string = arg[0];
+
+  try {
+    const name = path.basename(imagePath);
+    const absolutePath = getAssetPath(path.join('question_images', name));
+
+    const newFileName = await copyFileWithSuffix(imagePath, absolutePath);
+    const relativePath = path.join('question_images', newFileName);
+
+    event.reply('copy-image', [relativePath]);
+  } catch (error) {
+    event.reply('notification', [
+      'Ошибка копирования изображения',
+      `${error}`,
+      'error',
+    ]);
+  }
+});
+
+ipcMain.on('remove-image', async (event, arg) => {
+  const relativePath: string = arg[0];
+  const absolutePath = getAssetPath(relativePath);
+
+  try {
+    await fs.unlink(absolutePath);
+    event.reply('remove-image', []);
+  } catch (error) {
+    event.reply('notification', [
+      'Ошибка удаления изображения',
+      `${error}`,
+      'error',
+    ]);
+  }
+});
+
+ipcMain.on('clear-images', async (event) => {
+  const absoluteImagesPath = getAssetPath('question_images');
+
+  try {
+    await emptyDir(absoluteImagesPath);
+    event.reply('clear-images', []);
+  } catch (error) {
+    event.reply('notification', [
+      'Ошибка удаления изображениий',
+      `${error}`,
+      'error',
+    ]);
+  }
+});
+
+ipcMain.on('export-data', async (event, arg) => {
+  const data = arg[0];
+
+  const absoluteMusicPath = getAssetPath('music');
+  const absoluteImagesPath = getAssetPath('question_images');
+
+  const destFolder = os.homedir() + '/Desktop/GuessTheMelody DATA';
+  const destFile = os.homedir() + '/Desktop/GuessTheMelody DATA/data.json';
+
+  try {
+    await fs.mkdir(destFolder);
+    await fs.cp(absoluteImagesPath, destFolder + '/question_images', {
+      recursive: true,
+    });
+    await fs.cp(absoluteMusicPath, destFolder + '/music', { recursive: true });
+    await fs.writeFile(destFile, data);
+    event.reply('export-data', ['Экспортировано на рабочий стол.', data]);
+  } catch (error) {
+    event.reply('export-data', [`Ошибка экспорта: ${error}`]);
+  }
+});
+
+ipcMain.on('import-data', async (event, arg) => {
+  const jsonPath = arg[0];
+  const musicFolder = jsonPath.replace('data.json', 'music');
+  const imagesFolder = jsonPath.replace('data.json', 'question_images');
+
+  const absoluteMusicPath = getAssetPath('music');
+  const absoluteImagesPath = getAssetPath('question_images');
+
+  try {
+    await emptyDir(absoluteImagesPath);
+    await fs.cp(imagesFolder, absoluteImagesPath, { recursive: true });
+
+    await emptyDir(absoluteMusicPath);
+    await fs.cp(musicFolder, absoluteMusicPath, { recursive: true });
+
+    const file = await fs.readFile(jsonPath, { encoding: 'utf8' });
+    const data = JSON.parse(file);
+    event.reply('import-data', ['Импортировано', data]);
+  } catch (error) {
+    event.reply('import-data', [`Ошибка импорта: ${error}`, null]);
+  }
+});
+
+ipcMain.on('clear-music', async (event) => {
+  const absoluteMusicPath = getAssetPath('music');
+
+  await emptyDir(absoluteMusicPath);
+  event.reply('clear-music', []);
+});
+
+ipcMain.on('open-musics-folder', async () => {
+  const absoluteMusicPath = getAssetPath('music');
+  shell.openPath(absoluteMusicPath);
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

@@ -1,0 +1,15 @@
+.rec {
+  animation: fill 2s infinite;
+}
+
+@keyframes fill {
+  0% {
+    fill: #E53E3E;
+  }
+  50% {
+    fill: transparent;
+  }
+  100% {
+    fill: #E53E3E;
+  }
+}

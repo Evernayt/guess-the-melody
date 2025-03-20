@@ -1,6 +1,6 @@
-import { IPianoOctave } from 'models/IPianoOctave';
+import { IPianoOctave } from 'types/IPianoOctave';
 
-const octaves: IPianoOctave[] = [
+export const OCTAVES: IPianoOctave[] = [
   {
     id: 1,
     whiteKey: {
@@ -9,7 +9,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['Q', 'q', 'Й', 'й'],
     },
     blackKey: {
-      key: 'CS3',
+      key: 'C#3',
       sound: '/piano_sounds/Cs3.mp3',
       keyboard_keys: ['1'],
     },
@@ -22,7 +22,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['W', 'w', 'Ц', 'ц'],
     },
     blackKey: {
-      key: 'DS3',
+      key: 'D#3',
       sound: '/piano_sounds/Ds3.mp3',
       keyboard_keys: ['2'],
     },
@@ -44,7 +44,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['R', 'r', 'К', 'к'],
     },
     blackKey: {
-      key: 'FS3',
+      key: 'F#3',
       sound: '/piano_sounds/Fs3.mp3',
       keyboard_keys: ['3'],
     },
@@ -57,7 +57,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['T', 't', 'Е', 'е'],
     },
     blackKey: {
-      key: 'GS3',
+      key: 'G#3',
       sound: '/piano_sounds/Gs3.mp3',
       keyboard_keys: ['4'],
     },
@@ -70,7 +70,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['Y', 'y', 'Н', 'н'],
     },
     blackKey: {
-      key: 'AS3',
+      key: 'A#3',
       sound: '/piano_sounds/As3.mp3',
       keyboard_keys: ['5'],
     },
@@ -92,7 +92,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['I', 'i', 'Ш', 'ш'],
     },
     blackKey: {
-      key: 'CS4',
+      key: 'C#4',
       sound: '/piano_sounds/Cs4.mp3',
       keyboard_keys: ['6'],
     },
@@ -105,7 +105,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['O', 'o', 'Щ', 'щ'],
     },
     blackKey: {
-      key: 'DS4',
+      key: 'D#4',
       sound: '/piano_sounds/Ds4.mp3',
       keyboard_keys: ['7'],
     },
@@ -127,7 +127,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['{', '[', 'Х', 'х'],
     },
     blackKey: {
-      key: 'FS4',
+      key: 'F#4',
       sound: '/piano_sounds/Fs4.mp3',
       keyboard_keys: ['8'],
     },
@@ -140,7 +140,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['}', ']', 'Ъ', 'ъ'],
     },
     blackKey: {
-      key: 'GS4',
+      key: 'G#4',
       sound: '/piano_sounds/Gs4.mp3',
       keyboard_keys: ['9'],
     },
@@ -153,7 +153,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['Z', 'z', 'Я', 'я'],
     },
     blackKey: {
-      key: 'AS4',
+      key: 'A#4',
       sound: '/piano_sounds/As4.mp3',
       keyboard_keys: ['A', 'a', 'Ф', 'ф'],
     },
@@ -175,7 +175,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['C', 'c', 'С', 'с'],
     },
     blackKey: {
-      key: 'CS5',
+      key: 'C#5',
       sound: '/piano_sounds/Cs5.mp3',
       keyboard_keys: ['S', 's', 'Ы', 'ы'],
     },
@@ -188,7 +188,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['V', 'v', 'М', 'м'],
     },
     blackKey: {
-      key: 'DS5',
+      key: 'D#5',
       sound: '/piano_sounds/Ds5.mp3',
       keyboard_keys: ['D', 'd', 'В', 'в'],
     },
@@ -210,7 +210,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['N', 'n', 'Т', 'т'],
     },
     blackKey: {
-      key: 'FS5',
+      key: 'F#5',
       sound: '/piano_sounds/Fs5.mp3',
       keyboard_keys: ['F', 'f', 'А', 'а'],
     },
@@ -223,7 +223,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['M', 'm', 'Ь', 'ь'],
     },
     blackKey: {
-      key: 'GS5',
+      key: 'G#5',
       sound: '/piano_sounds/Gs5.mp3',
       keyboard_keys: ['G', 'g', 'П', 'п'],
     },
@@ -236,7 +236,7 @@ const octaves: IPianoOctave[] = [
       keyboard_keys: ['<', ',', 'Б', 'б'],
     },
     blackKey: {
-      key: 'AS5',
+      key: 'A#5',
       sound: '/piano_sounds/As5.mp3',
       keyboard_keys: ['H', 'h', 'Р', 'р'],
     },
@@ -251,5 +251,3 @@ const octaves: IPianoOctave[] = [
     blackKey: null,
   },
 ];
-
-export { octaves };

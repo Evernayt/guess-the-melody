@@ -1,5 +1,4 @@
-import calcPlacement from './calcPlacement';
-import createClone from './createClone';
+import debounce from './debounce';
 import sleep from './sleep';
 
-export { calcPlacement, createClone, sleep };
+export { debounce, sleep };

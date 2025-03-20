@@ -1,0 +1,17 @@
+.container {
+  flex: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  position: relative;
+
+  &:hover {
+    .play_button {
+      opacity: 1;
+    }
+  }
+}
+
+.play_button {
+  opacity: 0;
+  transition: opacity 100ms;
+}

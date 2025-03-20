@@ -1,62 +1,38 @@
 @font-face {
   font-family: 'TickingTimebombBbItalic';
-  src: local('TickingTimebombBbItalic'),
+  src:
+    local('TickingTimebombBbItalic'),
     url(/assets/fonts/TickingTimebombBbItalic.ttf) format('truetype');
 }
 
-:root {
-  /* COLORS */
-  --primary-color: #ffd60a;
-  --primary-deemphasized-color: #ffea83;
-  --secondary-color: #ebeae4;
-  --primary-text-color: #050505;
-  --secondary-text-color: #6b6a65;
-  --secondary-text-on-bg-color: #706d60;
-  --background-color: #f5f4f0;
-  --separator-color: #d4d3ce;
-  --border-color: #e2e1dd;
-  --tooltip-color: #3c3c3c;
-  --tooltip-text-color: #ffffff;
-  --card-background: #ffffff;
-  --danger-color: #eb5c5c;
-  --success-color: #1c9d33;
-
-  /* COLORS: HOVER */
-  --hover-primary-color: #f5cd0a;
-  --hover-primary-deemphasized-color: #f2dc7c;
-  --hover-secondary-color: #dfded8;
-  --hover-background-color: #e9e8e4;
-  --hover-card-color: #f2f2f2;
-  --hover-danger-color: #d75454;
-  --hover-success-color: #15892a;
-
-  /* COLORS: DISABLED */
-  --disabled-background: #ebeae4;
-  --disabled-text: #c4c3bc;
-
-  /* SIZES */
-  --border-radius: 8px;
-
-  /* SHADOWS */
-  --shadow-1: rgba(0, 0, 0, 0.1);
-  --shadow-2: rgba(0, 0, 0, 0.2);
-  --shadow-5: rgba(0, 0, 0, 0.5);
-  --shadow-8: rgba(0, 0, 0, 0.8);
-
-  /* OVERLAY */
-  --overlay-alpha-80: rgba(244, 244, 244, 0.8);
+.animate {
+  animation: opacity 2.5s infinite;
 }
 
-body {
-  font-family: sans-serif;
-  font-size: 14px;
-  margin: 0;
-  padding: 0;
-  user-select: none;
+@keyframes opacity {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-input,
-button,
-a {
-  outline: 0;
+.animate2 {
+  animation: opacity2 1.5s infinite;
+}
+
+@keyframes opacity2 {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }

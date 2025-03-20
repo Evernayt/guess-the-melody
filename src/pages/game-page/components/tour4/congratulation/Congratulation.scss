@@ -1,0 +1,150 @@
+.text {
+  width: 50%;
+  filter: drop-shadow(0 0 3px white);
+
+  path {
+    stroke: white;
+  }
+}
+
+#svg_V_1_1 {
+  stroke-dasharray: 3586;
+  stroke-dashoffset: 3586;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out forwards;
+}
+
+#svg_V_1_2 {
+  stroke-dasharray: 42876;
+  stroke-dashoffset: 42876;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out forwards;
+}
+
+#svg_y {
+  stroke-dasharray: 15519;
+  stroke-dashoffset: 15519;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 0.5s forwards;
+}
+
+#svg_v_2 {
+  stroke-dasharray: 24015;
+  stroke-dashoffset: 24015;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 1s forwards;
+}
+
+#svg_yigr {
+  stroke-dasharray: 55297;
+  stroke-dashoffset: 55297;
+  opacity: 0;
+  animation: draw 1.5s ease-in-out 1s forwards;
+}
+
+#svg_ali {
+  stroke-dasharray: 36408;
+  stroke-dashoffset: 36408;
+  opacity: 0;
+  animation: draw 1s ease-in-out 2.5s forwards;
+}
+
+#svg_Super {
+  stroke-dasharray: 94164;
+  stroke-dashoffset: 94164;
+  opacity: 0;
+  animation: draw 1.5s ease-in-out 2.5s forwards;
+}
+
+#svg_igr {
+  stroke-dasharray: 38148;
+  stroke-dashoffset: 38148;
+  opacity: 0;
+  animation: draw 1s ease-in-out 3s forwards;
+}
+
+#svg_u {
+  stroke-dasharray: 23213;
+  stroke-dashoffset: 23213;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 3.5s forwards;
+}
+
+#svg_line_1 {
+  stroke-dasharray: 3304;
+  stroke-dashoffset: 3304;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 3.5s forwards;
+}
+
+#svg_dot_1 {
+  stroke-dasharray: 359;
+  stroke-dashoffset: 359;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 3.5s forwards;
+}
+
+// --------------------------------
+
+#svg_P_1 {
+  stroke-dasharray: 18243;
+  stroke-dashoffset: 18243;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out forwards;
+}
+
+#svg_P_2 {
+  stroke-dasharray: 13599;
+  stroke-dashoffset: 13599;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out forwards;
+}
+
+#svg_P_3 {
+  stroke-dasharray: 11093;
+  stroke-dashoffset: 11093;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out forwards;
+}
+
+#svg_ozdr {
+  stroke-dasharray: 88539;
+  stroke-dashoffset: 88539;
+  opacity: 0;
+  animation: draw 1.5s ease-in-out 0.5s forwards;
+}
+
+#svg_av {
+  stroke-dasharray: 37383;
+  stroke-dashoffset: 37383;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 1.5s forwards;
+}
+
+#svg_lyaem {
+  stroke-dasharray: 52286;
+  stroke-dashoffset: 52286;
+  opacity: 0;
+  animation: draw 2s ease-in-out 2s forwards;
+}
+
+#svg_line_2 {
+  stroke-dasharray: 3304;
+  stroke-dashoffset: 3304;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 4s forwards;
+}
+
+#svg_dot_2 {
+  stroke-dasharray: 359;
+  stroke-dashoffset: 359;
+  opacity: 0;
+  animation: draw 0.5s ease-in-out 4s forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}

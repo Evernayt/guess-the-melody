@@ -1,148 +1,124 @@
-import { useAppDispatch, useAppSelector } from 'hooks/redux';
-import { EditGamePage, MainPage } from 'pages';
-import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { lazy, useEffect } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import { appActions } from '../store/reducers/AppSlice';
+import GamePage from 'pages/game-page/GamePage';
+import { Notification } from 'components';
 import {
-  setAssetsPathAction,
-  setMusicFilesAction,
-} from 'store/reducers/AppSlice';
-import { setFirstTourAction } from 'store/reducers/FirtsTourSlice';
-import {
-  setFourthTourAction,
-  setFourthTourInitialTimerAction,
-} from 'store/reducers/FourthTourSlice';
-import {
-  setNumberIncrementSpeedAction,
-  setSecondTourAction,
-} from 'store/reducers/SecondTourSlice';
-import { setThirdTourAction } from 'store/reducers/ThirdTourSlice';
+  getInitialTimer,
+  getMaxPianoNotes,
+  getMusicFiles,
+  getPointsIncreaseRate,
+  getTour1,
+  getTour2,
+  getTour3,
+  getTour4,
+  getVolume,
+  setMusicFiles,
+  setTour1,
+  setTour2,
+  setTour3,
+  setTour4,
+} from 'helpers/localStorage';
+import { tour1Actions } from 'store/reducers/Tour1Slice';
+import { tour2Actions } from 'store/reducers/Tour2Slice';
+import { tour3Actions } from 'store/reducers/Tour3Slice';
+import { tour4Actions } from 'store/reducers/Tour4Slice';
 import './App.css';
 
+const EditGamePage = lazy(() => import('pages/edit-game-page/EditGamePage'));
+
 const App = () => {
-  const firstTour = useAppSelector((state) => state.firstTour.firstTour);
-  const secondTour = useAppSelector((state) => state.secondTour.secondTour);
-  const thirdTour = useAppSelector((state) => state.thirdTour.thirdTour);
-  const fourthTour = useAppSelector((state) => state.fourthTour.fourthTour);
+  const tour1 = useAppSelector((state) => state.tour1.tour1);
+  const tour2 = useAppSelector((state) => state.tour2.tour2);
+  const tour3 = useAppSelector((state) => state.tour3.tour3);
+  const tour4 = useAppSelector((state) => state.tour4.tour4);
   const musicFiles = useAppSelector((state) => state.app.musicFiles);
-  const numberIncrementSpeed = useAppSelector(
-    (state) => state.secondTour.numberIncrementSpeed
-  );
-  const initialTimer = useAppSelector((state) => state.fourthTour.initialTimer);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    getAssetsPath();
+    loadAssetsPath();
 
-    const localFirstTour = JSON.parse(
-      localStorage.getItem('firstTour') || '{}'
-    );
-    const localSecondTour = JSON.parse(
-      localStorage.getItem('secondTour') || '{}'
-    );
-    const localThirdTour = JSON.parse(
-      localStorage.getItem('thirdTour') || '{}'
-    );
-    const localFourthTour = JSON.parse(
-      localStorage.getItem('fourthTour') || '{}'
-    );
-    const localMusic = JSON.parse(localStorage.getItem('music') || '[]');
-    const localNumberIncrementSpeed = Number(
-      localStorage.getItem('numberIncrementSpeed')
-    );
-    const localInitialTimer = Number(localStorage.getItem('initialTimer'));
+    const localTour1 = getTour1();
+    const localTour2 = getTour2();
+    const localTour3 = getTour3();
+    const localTour4 = getTour4();
+    const localVolume = getVolume();
+    const localMusicFiles = getMusicFiles();
+    const localPointsIncreaseRate = getPointsIncreaseRate();
+    const localInitialTimer = getInitialTimer();
+    const localMaxPianoNotes = getMaxPianoNotes();
 
-    if (Object.keys(localFirstTour).length !== 0) {
-      dispatch(setFirstTourAction(localFirstTour));
+    if (localTour1) {
+      dispatch(tour1Actions.setTour1(localTour1));
     }
-    if (Object.keys(localSecondTour).length !== 0) {
-      dispatch(setSecondTourAction(localSecondTour));
+    if (localTour2) {
+      dispatch(tour2Actions.setTour2(localTour2));
     }
-    if (Object.keys(localThirdTour).length !== 0) {
-      dispatch(setThirdTourAction(localThirdTour));
+    if (localTour3) {
+      dispatch(tour3Actions.setTour3(localTour3));
     }
-    if (Object.keys(localFourthTour).length !== 0) {
-      dispatch(setFourthTourAction(localFourthTour));
+    if (localTour4) {
+      dispatch(tour4Actions.setTour4(localTour4));
     }
-    if (localMusic.length > 0) {
-      dispatch(setMusicFilesAction(localMusic));
+    dispatch(appActions.setVolume(localVolume));
+    if (localMusicFiles.length > 0) {
+      dispatch(appActions.setMusicFiles(localMusicFiles));
     }
-    if (localNumberIncrementSpeed > 0) {
-      dispatch(setNumberIncrementSpeedAction(localNumberIncrementSpeed));
-    }
-    if (localInitialTimer > 0) {
-      dispatch(setFourthTourInitialTimerAction(localInitialTimer));
-    }
+    dispatch(tour2Actions.setPointsIncreaseRate(localPointsIncreaseRate));
+    dispatch(tour4Actions.setTour4InitialTimer(localInitialTimer));
+    dispatch(appActions.setMaxPianoNotes(localMaxPianoNotes));
   }, []);
 
   useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE FIRST TOUR');
-    console.log('====================================');
-    localStorage.setItem('firstTour', JSON.stringify(firstTour));
-  }, [firstTour]);
+    console.log('=== SAVE TOUR 1 ===');
+    setTour1(tour1);
+  }, [tour1]);
 
   useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE SECOND TOUR');
-    console.log('====================================');
-    localStorage.setItem('secondTour', JSON.stringify(secondTour));
-  }, [secondTour]);
+    console.log('=== SAVE TOUR 2 ===');
+    setTour2(tour2);
+  }, [tour2]);
 
   useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE THIRD TOUR');
-    console.log('====================================');
-    localStorage.setItem('thirdTour', JSON.stringify(thirdTour));
-  }, [thirdTour]);
+    console.log('=== SAVE TOUR 3 ===');
+    setTour3(tour3);
+  }, [tour3]);
 
   useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE FOURTH TOUR');
-    console.log('====================================');
-    localStorage.setItem('fourthTour', JSON.stringify(fourthTour));
-  }, [fourthTour]);
+    console.log('=== SAVE TOUR 4 ===');
+    setTour4(tour4);
+  }, [tour4]);
 
   useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE MUSIC');
-    console.log('====================================');
-    localStorage.setItem('music', JSON.stringify(musicFiles));
+    console.log('=== SAVE MUSIC ===');
+    setMusicFiles(musicFiles);
   }, [musicFiles]);
 
-  useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE SPEED');
-    console.log('====================================');
-    localStorage.setItem(
-      'numberIncrementSpeed',
-      numberIncrementSpeed.toString()
-    );
-  }, [numberIncrementSpeed]);
-
-  useEffect(() => {
-    console.log('====================================');
-    console.log('SAVE TIMER');
-    console.log('====================================');
-    localStorage.setItem('initialTimer', initialTimer.toString());
-  }, [initialTimer]);
-
-  const getAssetsPath = () => {
+  const loadAssetsPath = () => {
     window.electron.ipcRenderer.sendMessage('get-assets-path', []);
-
     window.electron.ipcRenderer.once('get-assets-path', (arg) => {
-      const assetsPath = arg[0];
-      dispatch(setAssetsPathAction(assetsPath));
+      const assetsPath: string = arg[0];
+      dispatch(appActions.setAssetsPath(assetsPath));
     });
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/editgame" element={<EditGamePage />} />
-      </Routes>
-    </Router>
+    <>
+      <Notification />
+      <Router
+        future={{
+          v7_relativeSplatPath: true,
+          v7_startTransition: true,
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<GamePage />} />
+          <Route path="/editgame" element={<EditGamePage />} />
+        </Routes>
+      </Router>
+    </>
   );
 };
 

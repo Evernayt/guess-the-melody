@@ -1,31 +1,23 @@
-import { useAppSelector } from 'hooks/redux';
 import { FC } from 'react';
-import styles from './Category.module.css';
+import { Center, Text } from '@chakra-ui/react';
+import { ICategory } from 'types/ICategory';
 
 interface CategoryProps {
-  id: number;
-  index: number;
+  category: ICategory;
+  activeCategoryId: number;
 }
 
-const Category: FC<CategoryProps> = ({ id, index }) => {
-  const activeCategoryId = useAppSelector(
-    (state) => state.app.activeCategoryId
-  );
-  const activeTourId = useAppSelector((state) => state.app.activeTourId);
-  const firstTour = useAppSelector((state) => state.firstTour.firstTour);
-  const secondTour = useAppSelector((state) => state.secondTour.secondTour);
-
+const Category: FC<CategoryProps> = ({ category, activeCategoryId }) => {
   return (
-    <div
-      className={styles.text_container}
-      style={activeCategoryId === id ? { backgroundColor: '#ffea83' } : {}}
+    <Center
+      borderRadius={6}
+      p={4}
+      bgColor={activeCategoryId === category.id ? '#ffea83' : '#ECC94B'}
     >
-      <span className={styles.text}>
-        {activeTourId === 1
-          ? firstTour.categories[index].name
-          : secondTour.categories[index].name}
-      </span>
-    </div>
+      <Text fontSize="3xl" textAlign="center">
+        <b>{category.name}</b>
+      </Text>
+    </Center>
   );
 };
 

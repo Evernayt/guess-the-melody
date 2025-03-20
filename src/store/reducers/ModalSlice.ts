@@ -1,133 +1,57 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IModal } from 'models/IModal';
-import { IDoubleSharp } from 'models/INote';
-
-export interface IQuestionModal {
-  isShowing: boolean;
-  doubleSharp: IDoubleSharp | null;
-}
-
-export interface IEditQuestionModal {
-  isShowing: boolean;
-  categoryIndex: number;
-  noteIndex: number;
-}
-
-export interface IThirdTourModal {
-  isShowing: boolean;
-  musicThemeIndex: number;
-}
-
-const initialModal: IModal = { isShowing: false };
-const initialEditQuestionModal: IEditQuestionModal = {
-  isShowing: false,
-  categoryIndex: 0,
-  noteIndex: 0,
-};
-const initialQuestionModal: IQuestionModal = {
-  isShowing: false,
-  doubleSharp: null,
-};
-const initialThirdTourModal: IThirdTourModal = {
-  isShowing: false,
-  musicThemeIndex: -1,
-};
+import { INITIAL_MODAL } from 'constants/initialStates';
+import {
+  IEditQuestionModal,
+  IMelodyHintModal,
+  IModal,
+  IPianoModal,
+  IQuestionModal,
+} from 'types/IModal';
 
 type ModalState = {
+  /* game-page */
   editGameModal: IModal;
+  questionModal: IQuestionModal;
   dataModal: IModal;
   resetDataModal: IModal;
-  questionModal: IQuestionModal;
+  /* edit-game-page */
   editQuestionModal: IEditQuestionModal;
-  pianoModal: IThirdTourModal;
-  imageModal: IThirdTourModal;
+  melodyHintModal: IMelodyHintModal;
+  pianoModal: IPianoModal;
 };
 
 const initialState: ModalState = {
-  editGameModal: initialModal,
-  dataModal: initialModal,
-  resetDataModal: initialModal,
-  questionModal: initialQuestionModal,
-  editQuestionModal: initialEditQuestionModal,
-  pianoModal: initialThirdTourModal,
-  imageModal: initialThirdTourModal,
+  /* game-page */
+  editGameModal: INITIAL_MODAL,
+  questionModal: INITIAL_MODAL,
+  dataModal: INITIAL_MODAL,
+  resetDataModal: INITIAL_MODAL,
+  /* edit-game-page */
+  editQuestionModal: INITIAL_MODAL,
+  melodyHintModal: INITIAL_MODAL,
+  pianoModal: INITIAL_MODAL,
 };
+
+interface OpenModalProps {
+  modal: keyof ModalState;
+  props?: Partial<ModalState[keyof ModalState]>;
+}
 
 export const modalSlice = createSlice({
   name: 'modal',
   initialState,
   reducers: {
-    openEditGameModalAction(state) {
-      state.editGameModal.isShowing = true;
+    openModal(state: ModalState, action: PayloadAction<OpenModalProps>) {
+      state[action.payload.modal] = {
+        ...action.payload.props,
+        isOpen: true,
+      };
     },
-    closeEditGameModalAction(state) {
-      state.editGameModal.isShowing = false;
-    },
-    openDataModalAction(state) {
-      state.dataModal.isShowing = true;
-    },
-    closeDataModalAction(state) {
-      state.dataModal.isShowing = false;
-    },
-    openResetDataModalAction(state) {
-      state.resetDataModal.isShowing = true;
-    },
-    closeResetDataModalAction(state) {
-      state.resetDataModal.isShowing = false;
-    },
-    openQuestionModalAction(state, action: PayloadAction<IDoubleSharp | null>) {
-      state.questionModal.isShowing = true;
-      state.questionModal.doubleSharp = action.payload;
-    },
-    closeQuestionModalAction(state) {
-      state.questionModal.isShowing = false;
-      state.questionModal.doubleSharp = null;
-    },
-    openEditQuestionModalAction(
-      state,
-      action: PayloadAction<{ categoryIndex: number; noteIndex: number }>
-    ) {
-      state.editQuestionModal.isShowing = true;
-      state.editQuestionModal.categoryIndex = action.payload.categoryIndex;
-      state.editQuestionModal.noteIndex = action.payload.noteIndex;
-    },
-    closeEditQuestionModalAction(state) {
-      state.editQuestionModal.isShowing = false;
-    },
-    openPianoModalAction(state, action: PayloadAction<number>) {
-      state.pianoModal.isShowing = true;
-      state.pianoModal.musicThemeIndex = action.payload;
-    },
-    closePianoModalAction(state) {
-      state.pianoModal.isShowing = false;
-      state.pianoModal.musicThemeIndex = -1;
-    },
-    openImageModalAction(state, action: PayloadAction<number>) {
-      state.imageModal.isShowing = true;
-      state.imageModal.musicThemeIndex = action.payload;
-    },
-    closeImageModalAction(state) {
-      state.imageModal.isShowing = false;
-      state.imageModal.musicThemeIndex = -1;
+    closeModal(state, action: PayloadAction<keyof ModalState>) {
+      state[action.payload] = initialState[action.payload];
     },
   },
 });
 
-export const {
-  openEditGameModalAction,
-  closeEditGameModalAction,
-  openDataModalAction,
-  closeDataModalAction,
-  openResetDataModalAction,
-  closeResetDataModalAction,
-  openQuestionModalAction,
-  closeQuestionModalAction,
-  openEditQuestionModalAction,
-  closeEditQuestionModalAction,
-  openPianoModalAction,
-  closePianoModalAction,
-  openImageModalAction,
-  closeImageModalAction,
-} = modalSlice.actions;
-
+export const modalActions = modalSlice.actions;
 export default modalSlice.reducer;

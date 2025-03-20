@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
 
-const sleep = (ms: number, ref: RefObject<boolean>): Promise<number> => {
+export default function sleep(ms: number, ref: RefObject<boolean>) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, ms);
 
@@ -11,6 +11,4 @@ const sleep = (ms: number, ref: RefObject<boolean>): Promise<number> => {
       }
     }, 500);
   });
-};
-
-export default sleep;
+}
